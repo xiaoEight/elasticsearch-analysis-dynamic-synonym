@@ -4,14 +4,14 @@
 
     <groupId>com.bellszhu.elasticsearch</groupId>
     <artifactId>elasticsearch-analysis-dynamic-synonym</artifactId>
-    <version>7.0.0</version>
+    <version>5.3.2</version>
     <packaging>jar</packaging>
     <name>elasticsearch-dynamic-synonym</name>
     <description>Analysis-plugin for synonym</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <elasticsearch.version>${project.version}</elasticsearch.version>
+        <elasticsearch.version>5.3.2</elasticsearch.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <elasticsearch.plugin.name>analysis-dynamic-synonym</elasticsearch.plugin.name>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
@@ -35,18 +35,16 @@
         <version>9</version>
     </parent>
 
-    <scm>
-        <connection>scm:git:git@github.com:bells/elasticsearch-analysis-dynamic-synonym.git</connection>
-        <developerConnection>scm:git:git@github.com:bells/elasticsearch-analysis-dynamic-synonym.git
-        </developerConnection>
-        <url>https://github.com/bells/elasticsearch-analysis-dynamic-synonym</url>
-    </scm>
-
     <dependencies>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <version>${elasticsearch.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hp.hpl.sparta</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -57,16 +55,37 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.4.1</version>
+            <version>4.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>2.7</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>local_group</id>
+            <name>local_group</name>
+            <url>http://nexus.yyjzt.com/nexus/content/groups/public/</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

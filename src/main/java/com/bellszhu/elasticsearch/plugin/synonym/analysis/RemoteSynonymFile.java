@@ -3,6 +3,7 @@
  */
 package com.bellszhu.elasticsearch.plugin.synonym.analysis;
 
+import com.bellszhu.elasticsearch.plugin.synonym.tools.SynonymFilterHandleTools;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -56,8 +57,13 @@ public class RemoteSynonymFile implements SynonymFile {
 
     private String eTags;
 
+    private boolean extendFilter;
+    private String splitSymbol;
+    private boolean excludeFirst;
+
     RemoteSynonymFile(Environment env, Analyzer analyzer,
-                      boolean expand, String format, String location) {
+                      boolean expand, String format, String location,
+                      boolean extendFilter,String splitSymbol,boolean excludeFirst) {
         this.analyzer = analyzer;
         this.expand = expand;
         this.format = format;
@@ -65,6 +71,10 @@ public class RemoteSynonymFile implements SynonymFile {
         this.location = location;
 
         this.httpclient = AccessController.doPrivileged((PrivilegedAction<CloseableHttpClient>) HttpClients::createDefault);
+
+        this.extendFilter = extendFilter;
+        this.splitSymbol = splitSymbol;
+        this.excludeFirst = excludeFirst;
 
         isNeedReloadSynonymMap();
     }
@@ -149,6 +159,10 @@ public class RemoteSynonymFile implements SynonymFile {
                 String line;
                 while ((line = br.readLine()) != null) {
                     logger.info("reload remote synonym: {}", line);
+                    if(this.extendFilter){
+                        line = SynonymFilterHandleTools.handleToLine(line,this.splitSymbol,this.excludeFirst);
+                        logger.info("reload local synonym handle complete: {}", line);
+                    }
                     sb.append(line)
                             .append(System.getProperty("line.separator"));
                 }

@@ -3,6 +3,7 @@
  */
 package com.bellszhu.elasticsearch.plugin.synonym.analysis;
 
+import com.bellszhu.elasticsearch.plugin.synonym.tools.SynonymFilterHandleTools;
 import org.apache.commons.codec.Charsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,8 +44,13 @@ public class LocalSynonymFile implements SynonymFile {
 
     private long lastModified;
 
+    private boolean extendFilter;
+    private String splitSymbol;
+    private boolean excludeFirst;
+
     LocalSynonymFile(Environment env, Analyzer analyzer, boolean expand,
-                     String format, String location) {
+                     String format, String location,
+                     boolean extendFilter,String splitSymbol,boolean excludeFirst) {
         this.analyzer = analyzer;
         this.expand = expand;
         this.format = format;
@@ -52,6 +58,11 @@ public class LocalSynonymFile implements SynonymFile {
         this.location = location;
 
         this.synonymFilePath = env.configFile().resolve(location);
+
+        this.extendFilter = extendFilter;
+        this.splitSymbol = splitSymbol;
+        this.excludeFirst = excludeFirst;
+
         isNeedReloadSynonymMap();
     }
 
@@ -77,6 +88,10 @@ public class LocalSynonymFile implements SynonymFile {
             String line;
             while ((line = br.readLine()) != null) {
                 logger.info("reload local synonym: {}", line);
+                if(this.extendFilter){
+                    line = SynonymFilterHandleTools.handleToLine(line,splitSymbol,excludeFirst);
+                    logger.info("reload local synonym handle complete: {}", line);
+                }
                 sb.append(line).append(System.getProperty("line.separator"));
             }
             return new StringReader(sb.toString());

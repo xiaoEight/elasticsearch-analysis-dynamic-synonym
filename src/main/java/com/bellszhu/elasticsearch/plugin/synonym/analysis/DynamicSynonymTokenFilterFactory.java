@@ -51,6 +51,10 @@ public class DynamicSynonymTokenFilterFactory extends
     private SynonymMap synonymMap;
     private Map<DynamicSynonymFilter, Integer> dynamicSynonymFilters = new WeakHashMap<>();
 
+    private final boolean extendFilter;
+    private final String splitSymbol;
+    private final boolean excludeFirst;
+
     public DynamicSynonymTokenFilterFactory(
             IndexSettings indexSettings,
             Environment env,
@@ -71,6 +75,11 @@ public class DynamicSynonymTokenFilterFactory extends
         this.ignoreCase = settings.getAsBoolean("ignore_case", false);
         this.expand = settings.getAsBoolean("expand", true);
         this.format = settings.get("format", "");
+
+        //special filter setting
+        this.extendFilter = settings.getAsBoolean("extend_filter", false);
+        this.splitSymbol = settings.get("extend_split_symbol", ", ");
+        this.excludeFirst = settings.getAsBoolean("extend_exclude_first", false);;
 
         String tokenizerName = settings.get("tokenizer", "whitespace");
 
@@ -95,11 +104,11 @@ public class DynamicSynonymTokenFilterFactory extends
 
         SynonymFile synonymFile;
         if (location.startsWith("http://") || location.startsWith("https://")) {
-            synonymFile = new RemoteSynonymFile(env, analyzer, expand, format,
-                    location);
+            synonymFile = new RemoteSynonymFile(env, analyzer, expand, format,location,
+                    extendFilter,splitSymbol,excludeFirst);
         } else {
-            synonymFile = new LocalSynonymFile(env, analyzer, expand, format,
-                    location);
+            synonymFile = new LocalSynonymFile(env, analyzer, expand, format,location,
+                    extendFilter,splitSymbol,excludeFirst);
         }
         synonymMap = synonymFile.reloadSynonymMap();
 

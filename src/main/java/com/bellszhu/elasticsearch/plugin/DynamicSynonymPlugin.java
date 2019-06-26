@@ -35,7 +35,24 @@ import static java.util.Collections.singletonList;
  * @author bellszhu
  */
 public class DynamicSynonymPlugin extends Plugin implements AnalysisPlugin {
+
     private PluginComponent pluginComponent = new PluginComponent();
+    private static DynamicSynonymTokenFilterFactory dynamicSynonymTokenFilterFactory;
+
+//    @Override
+//    public Collection<Object> createComponents(Client client,
+//                                               ClusterService clusterService,
+//                                               ThreadPool threadPool,
+//                                               ResourceWatcherService resourceWatcherService,
+//                                               ScriptService scriptService,
+//                                               NamedXContentRegistry xContentRegistry,
+//                                               Environment environment,
+//                                               NodeEnvironment nodeEnvironment,
+//                                               NamedWriteableRegistry namedWriteableRegistry) {
+//        Collection<Object> components = new ArrayList<>();
+//        components.add(pluginComponent);
+//        return components;
+//    }
 
     @Override
     public Collection<Object> createComponents(Client client,
@@ -43,10 +60,7 @@ public class DynamicSynonymPlugin extends Plugin implements AnalysisPlugin {
                                                ThreadPool threadPool,
                                                ResourceWatcherService resourceWatcherService,
                                                ScriptService scriptService,
-                                               NamedXContentRegistry xContentRegistry,
-                                               Environment environment,
-                                               NodeEnvironment nodeEnvironment,
-                                               NamedWriteableRegistry namedWriteableRegistry) {
+                                               NamedXContentRegistry xContentRegistry) {
         Collection<Object> components = new ArrayList<>();
         components.add(pluginComponent);
         return components;
@@ -66,7 +80,12 @@ public class DynamicSynonymPlugin extends Plugin implements AnalysisPlugin {
             @Override
             public TokenFilterFactory get(IndexSettings indexSettings, Environment environment, String name, Settings settings)
                     throws IOException {
-                return new DynamicSynonymTokenFilterFactory(indexSettings, environment, name, settings, pluginComponent.getAnalysisRegistry());
+//                if(dynamicSynonymTokenFilterFactory == null){
+//                    dynamicSynonymTokenFilterFactory = new DynamicSynonymTokenFilterFactory(indexSettings,
+//                            environment, name, settings, pluginComponent.getAnalysisRegistry());
+//                }
+                return new DynamicSynonymTokenFilterFactory(indexSettings,
+                        environment, name, settings, pluginComponent.getAnalysisRegistry());
             }
 
             @Override
@@ -82,7 +101,7 @@ public class DynamicSynonymPlugin extends Plugin implements AnalysisPlugin {
 
         private AnalysisRegistry analysisRegistry;
 
-        AnalysisRegistry getAnalysisRegistry() {
+        public AnalysisRegistry getAnalysisRegistry() {
             return analysisRegistry;
         }
 
